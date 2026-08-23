@@ -43,9 +43,9 @@ description: >-
 
 | 台词 | 含义 | AI 执行序列 |
 |------|------|-------------|
-| "开分支 feat/asr" | 新建分支并推到远端 | `git switch -c feat/asr` → `git push -u origin feat/asr` → 回报"分支已建并推上去，GitHub 分支下拉框可见" |
-| "存档推上去" / "推上去" | 提交当前改动并推送 | `git add -A` → `git commit -m "<一句话说明>"` → `git push` → 回报 commit 一句话说明 + GitHub 上可见的位置 |
-| "合了" | 分支合并回 main 并推送 | 过"merge 前反问" → `git switch main` → `git merge feat/asr` → `git push` → 回报"feat/asr 已并入 main，GitHub 网页 main 的 commit 列表可见"（可选：`git branch -d feat/asr` 须另行确认） |
+| "开分支 feat/asr" | 新建分支并推到远端 | 过 SSH remote 自检 → `git switch -c feat/asr` → `git push -u origin feat/asr` → 回报"分支已建并推上去，GitHub 分支下拉框可见" |
+| "存档推上去" / "推上去" | 提交当前改动并推送 | 过 SSH remote 自检 → `git add -A` → `git commit -m "<一句话说明>"` → （推 main 时等人批准）→ `git push` → 回报 commit 一句话说明 + GitHub 上可见的位置 |
+| "合了" | 分支合并回 main 并推送 | 过"merge 前反问" → `git switch main` → `git merge feat/asr` → 过 SSH remote 自检 → （等人批准）→ `git push` → 回报"feat/asr 已并入 main，GitHub 网页 main 的 commit 列表可见"（可选：`git branch -d feat/asr` 须另行确认） |
 
 台词模糊（如"存一下"、"弄上去"）时，AI 必须追问确认到上表某一档，不得猜。
 
@@ -59,6 +59,37 @@ description: >-
    - `Storage/`（运行时落盘数据）
    - `node_modules/`、`__pycache__/`
    若项目缺 `.gitignore`，先提请补写（忽略上述四类），再继续存档。
+4. **GitHub remote 必须是 SSH**——执行 push 前检查 `git remote get-url origin`：
+   - 已是 `git@github.com:<user>/<repo>.git` → 继续。
+   - 若是 `https://github.com/...` → 先改为 SSH，再 push：
+     ```bash
+     git remote set-url origin git@github.com:<user>/<repo>.git
+     ```
+   - 不得新建 HTTPS remote；不得把 SSH 改回 HTTPS。
+5. **推送前连通性快检**——remote 为 GitHub 且即将 push 时，先测（读操作，随时可做）：
+   ```bash
+   nc -z -w 5 github.com 22          # SSH，应 succeed
+   curl -sS --connect-timeout 5 -o /dev/null https://github.com  # HTTPS，可能 timeout
+   ```
+   - SSH（22）通 → 用 SSH push。
+   - SSH 不通但 HTTPS（443）通 → 报告用户，请其选择是否临时改 HTTPS（默认仍优先 SSH）。
+   - 两者都不通 → 停止 push，报告网络问题，不得盲 retry。
+6. **推 main 需完整权限与批准**——目标分支为 `main` 时：
+   - Shell 使用 `required_permissions: ["all"]`。
+   - 设置 `request_smart_mode_approval: true` 等人批准后再 push。
+   - 不得因第一次被拦截就改让用户手动推，应先完成 SSH 修正后带批准重试。
+
+## GitHub 推送约定
+
+- **默认协议：SSH**（`git@github.com:...`），与 `deploy-github-pages` skill 一致。
+- **原因**：部分网络环境下 GitHub HTTPS（443）超时或 HTTP2 报错，SSH（22）仍可用；
+  曾用 HTTPS push 失败、改 SSH 后成功的案例即属此类。
+- **初始化 remote 时**（`git remote add origin`）直接写 SSH 地址，不写 HTTPS。
+- **push 失败排查顺序**：
+  1. remote 是否为 SSH？
+  2. `ssh -T git@github.com` 是否认证通过？
+  3. 推 main 是否已获批准？
+  4. 是否 `non-fast-forward`？→ `git pull origin <branch> --rebase` 后再 push（见 deploy-github-pages skill）。
 
 ## merge 前反问（答对才执行）
 
@@ -78,3 +109,5 @@ description: >-
 - **永不**执行 `git push --force`、`git reset --hard`、改动远端历史类命令；
   遇到必须用时，先解释清楚让人逐字确认。
 - **永不**在 merge 前反问未通过时"替用户顺手合了"。
+- **永不**对 GitHub 使用 HTTPS remote 直接 push（除非连通性快检确认 443 可用且 SSH 不可用，并已向用户说明）。
+- **永不**在 remote 为 HTTPS 且 push 因 443 超时失败后，让用户手动推而不先改 SSH 重试。
