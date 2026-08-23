@@ -49,7 +49,9 @@
   justify-content: center;
   gap: 0.5rem;
   box-shadow: 0 8px 24px rgba(224, 68, 73, 0.35);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  touch-action: none;
+  user-select: none;
 }
 
 .record-button:hover {
@@ -59,6 +61,26 @@
 
 .record-button:active {
   transform: scale(0.97);
+}
+
+.record-button--recording {
+  background: linear-gradient(145deg, #ff2d35, #c40000);
+  box-shadow: 0 0 0 6px rgba(255, 45, 53, 0.25), 0 8px 28px rgba(196, 0, 0, 0.5);
+  animation: record-pulse 1s ease-in-out infinite;
+}
+
+.record-button--recording:hover {
+  transform: scale(1);
+}
+
+@keyframes record-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 6px rgba(255, 45, 53, 0.25), 0 8px 28px rgba(196, 0, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(255, 45, 53, 0.12), 0 8px 32px rgba(196, 0, 0, 0.55);
+  }
 }
 
 .record-icon {
@@ -72,6 +94,68 @@
 .record-label {
   font-size: 0.9rem;
   font-weight: 500;
+}
+
+.record-error {
+  width: 100%;
+  margin: -0.75rem 0 0;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  background: #fef3f2;
+  border: 1px solid #fecdca;
+  color: #b42318;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* 录音预览 */
+.recording-preview {
+  width: 100%;
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.25rem 1.35rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e8eaed;
+}
+
+.recording-preview-title {
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.recording-meta {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+}
+
+.recording-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  font-size: 0.9rem;
+}
+
+.recording-meta-row dt {
+  margin: 0;
+  color: #666;
+}
+
+.recording-meta-row dd {
+  margin: 0;
+  font-weight: 600;
+  color: #111;
+  text-align: right;
+}
+
+.recording-player {
+  width: 100%;
+  height: 40px;
 }
 
 /* 结果展示区 */
@@ -98,6 +182,32 @@
   line-height: 1.65;
   color: #333;
   white-space: pre-wrap;
+}
+
+.upload-status {
+  margin: 0 0 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.upload-status--loading {
+  background: #f9fafb;
+  border: 1px solid #e4e7ec;
+  color: #475467;
+}
+
+.upload-status--success {
+  background: #ecfdf3;
+  border: 1px solid #abefc6;
+  color: #067647;
+}
+
+.upload-status--error {
+  background: #fef3f2;
+  border: 1px solid #fecdca;
+  color: #b42318;
 }
 
 /* 播放按钮 */
