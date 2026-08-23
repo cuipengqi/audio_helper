@@ -181,7 +181,98 @@
   font-size: 0.95rem;
   line-height: 1.65;
   color: #333;
+}
+
+.result-label {
+  margin: 0 0 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.result-text {
+  margin: 0;
   white-space: pre-wrap;
+}
+
+.result-placeholder {
+  margin: 0;
+  color: #98a2b3;
+}
+
+.extract-meta {
+  display: grid;
+  gap: 0.65rem;
+  margin: 1rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid #eef0f3;
+}
+
+.extract-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  font-size: 0.9rem;
+}
+
+.extract-meta-row dt {
+  margin: 0;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.extract-meta-row dd {
+  margin: 0;
+  font-weight: 600;
+  color: #111;
+  text-align: right;
+}
+
+.result-message {
+  margin: 1rem 0 0;
+  padding: 0.75rem 0.85rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.result-message--error {
+  background: #fef3f2;
+  border: 1px solid #fecdca;
+  color: #b42318;
+}
+
+.places-list {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eef0f3;
+}
+
+.places-items {
+  margin: 0.5rem 0 0;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.places-item {
+  line-height: 1.5;
+}
+
+.places-name {
+  display: block;
+  font-weight: 600;
+  color: #111;
+}
+
+.places-address {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.88rem;
+  color: #666;
 }
 
 .upload-status {
@@ -231,8 +322,19 @@
   border-color: #98a2b3;
 }
 
-.play-button:active {
+.play-button:active:not(:disabled) {
   background: #f2f4f7;
+}
+
+.play-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.play-button--playing {
+  border-color: #84caff;
+  background: #eff8ff;
+  color: #175cd3;
 }
 
 .play-icon {
